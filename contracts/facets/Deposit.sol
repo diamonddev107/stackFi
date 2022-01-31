@@ -30,7 +30,7 @@ contract Deposit is Pausable, IDeposit{
 		return true;
 	}
 
-	function savingsBalance(bytes32 _market, bytes32 _commitment) external override returns (uint) {
+	function savingsBalance(bytes32 _market, bytes32 _commitment) external view override returns (uint) {
 		return LibOpen._accountBalance(msg.sender, _market, _commitment, SAVINGSTYPE.BOTH);
 	}
 
@@ -80,13 +80,7 @@ contract Deposit is Pausable, IDeposit{
 	// 	return true;
 	// }
 
-	function withdrawDeposit (
-		bytes32 _market, 
-		bytes32 _commitment,
-		uint _amount,
-		SAVINGSTYPE _request
-	) external override nonReentrant() returns (bool) 
-	{
+	function withdrawDeposit (bytes32 _market, bytes32 _commitment,uint _amount,SAVINGSTYPE _request) external override nonReentrant() returns (bool) {
 		LibOpen._withdrawDeposit(msg.sender, _market, _commitment, _amount, _request);
 		return true;	
 	}
@@ -99,6 +93,8 @@ contract Deposit is Pausable, IDeposit{
 		price = LibOpen._getFairPrice(_requestId);
 	}
 
+
+// Implementing contract pausability.
 	function pauseDeposit() external override authDeposit() nonReentrant() {
 		_pause();
 	}
@@ -111,17 +107,17 @@ contract Deposit is Pausable, IDeposit{
 		return _paused();
 	}
 
-	//For upgradibility test
-	function upgradeTestAccount(address _account) external view returns (bool success) {
-    	LibOpen._hasAccount(_account);
-		LibOpen._hasLoanAccount(_account);
-		success = true;
-	}
+	// //For upgradibility test
+	// function upgradeTestAccount(address _account) external view returns (bool success) {
+    // 	LibOpen._hasAccount(_account);
+	// 	LibOpen._hasLoanAccount(_account);
+	// 	success = true;
+	// }
 
 	modifier authDeposit() {
     	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
 
-		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminDeposit, ds.adminDepositAddress), "Admin role does not exist.");
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminDeposit, ds.adminDepositAddress), "ERROR: ERROR: Not an admin");
 		_;
 	}
 }
