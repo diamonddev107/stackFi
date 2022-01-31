@@ -113,6 +113,7 @@ contract Loan1 is Pausable, ILoan1 {
     }
 
     modifier authLoan1() {
+<<<<<<< HEAD
         AppStorageOpen storage ds = LibOpen.diamondStorage();
         console.log("superadminaddress is %s", ds.superAdminAddress);
         require(
@@ -120,6 +121,11 @@ contract Loan1 is Pausable, ILoan1 {
                 LibOpen._hasAdminRole(ds.adminLoan1, ds.adminLoan1Address),
             "ERROR: Not an admin"
         );
+=======
+    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		console.log("superadminaddress is %s", ds.superAdminAddress);
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminLoan1, ds.adminLoan1Address), "Admin role does not exist.");
+>>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 
         _;
     }

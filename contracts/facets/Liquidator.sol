@@ -58,6 +58,7 @@ contract Liquidator is Pausable, ILiquidator {
         return _paused();
     }
 
+<<<<<<< HEAD
     modifier authLiquidator() {
         AppStorageOpen storage ds = LibOpen.diamondStorage();
         require(
@@ -71,3 +72,11 @@ contract Liquidator is Pausable, ILiquidator {
         _;
     }
 }
+=======
+	modifier authLiquidator() {
+    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminLiquidator, ds.adminLiquidatorAddress), "Admin role does not exist.");
+		_;
+	}
+}
+>>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)

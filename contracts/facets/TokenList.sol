@@ -117,6 +117,7 @@ contract TokenList is Pausable, ITokenList {
         return true;
     }
 
+<<<<<<< HEAD
     function removeMarket2Support(bytes32 _market)
         external
         override
@@ -126,6 +127,13 @@ contract TokenList is Pausable, ITokenList {
         LibOpen._removeMarket2Support(_market);
         return true;
     }
+=======
+	modifier authTokenList() {
+    AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminTokenList, ds.adminTokenListAddress), "Admin role does not exist.");	
+	  _;
+	}
+>>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 
     function updateMarket2Support(
         bytes32 _market,

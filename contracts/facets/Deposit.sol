@@ -23,15 +23,9 @@ contract Deposit is Pausable, IDeposit {
     // 	payable(ds.superAdminAddress).transfer(_msgValue());
     // }
 
-    function hasAccount(address _account)
-        external
-        view
-        override
-        returns (bool)
-    {
-        LibOpen._hasAccount(_account);
-        return true;
-    }
+	function savingsBalance(bytes32 _market, bytes32 _commitment) external override returns (uint) {
+		return LibOpen._accountBalance(msg.sender, _market, _commitment, SAVINGSTYPE.BOTH);
+	}
 
     function savingsBalance(bytes32 _market, bytes32 _commitment)
         external
@@ -104,15 +98,16 @@ contract Deposit is Pausable, IDeposit {
         }
     }
 
-    function hasDeposit(bytes32 _market, bytes32 _commitment)
-        external
-        view
-        override
-        returns (bool)
-    {
-        LibOpen._hasDeposit(msg.sender, _market, _commitment);
-        return true;
-    }
+	function withdrawDeposit (
+		bytes32 _market, 
+		bytes32 _commitment,
+		uint _amount,
+		SAVINGSTYPE _request
+	) external override nonReentrant() returns (bool) 
+	{
+		LibOpen._withdrawDeposit(msg.sender, _market, _commitment, _amount, _request);
+		return true;	
+	}
 
     // function createDeposit(
     // 	bytes32 _market,
@@ -120,25 +115,13 @@ contract Deposit is Pausable, IDeposit {
     // 	uint256 _amount
     // ) external override nonReentrant() returns (bool) {
 
-    // 	LibOpen._createNewDeposit(_market,_commitment, _amount, msg.sender);
-    // 	return true;
-    // }
-
-    function withdrawDeposit(
-        bytes32 _market,
-        bytes32 _commitment,
-        uint256 _amount,
-        SAVINGSTYPE _request
-    ) external override nonReentrant returns (bool) {
-        LibOpen._withdrawDeposit(
-            msg.sender,
-            _market,
-            _commitment,
-            _amount,
-            _request
-        );
-        return true;
-    }
+	function pauseDeposit() external override authDeposit() nonReentrant() {
+		_pause();
+	}
+	
+	function unpauseDeposit() external override authDeposit() nonReentrant() {
+		_unpause();   
+	}
 
     function addToDeposit(
         bytes32 _market,
@@ -149,43 +132,17 @@ contract Deposit is Pausable, IDeposit {
         return true;
     }
 
-    function getFairPriceDeposit(uint256 _requestId)
-        external
-        view
-        override
-        returns (uint256 price)
-    {
-        price = LibOpen._getFairPrice(_requestId);
-    }
-
-    // Implementing contract pausability.
-    function pauseDeposit() external override authDeposit nonReentrant {
-        _pause();
-    }
-
-    function unpauseDeposit() external override authDeposit nonReentrant {
-        _unpause();
-    }
-
-    function isPausedDeposit() external view virtual override returns (bool) {
-        return _paused();
-    }
-
-    // //For upgradibility test
-    // function upgradeTestAccount(address _account) external view returns (bool success) {
-    // 	LibOpen._hasAccount(_account);
-    // 	LibOpen._hasLoanAccount(_account);
-    // 	success = true;
-    // }
+	//For upgradibility test
+	function upgradeTestAccount(address _account) external view returns (bool success) {
+    	LibOpen._hasAccount(_account);
+		LibOpen._hasLoanAccount(_account);
+		success = true;
+	}
 
     modifier authDeposit() {
         AppStorageOpen storage ds = LibOpen.diamondStorage();
 
-        require(
-            LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) ||
-                LibOpen._hasAdminRole(ds.adminDeposit, ds.adminDepositAddress),
-            "ERROR: ERROR: Not an admin"
-        );
-        _;
-    }
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminDeposit, ds.adminDepositAddress), "Admin role does not exist.");
+		_;
+	}
 }

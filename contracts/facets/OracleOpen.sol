@@ -62,6 +62,7 @@ contract OracleOpen is Pausable, IOracleOpen {
     }
 
     modifier onlyAdmin() {
+<<<<<<< HEAD
         AppStorageOpen storage ds = LibOpen.diamondStorage();
         require(
             LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) ||
@@ -71,6 +72,10 @@ contract OracleOpen is Pausable, IOracleOpen {
                 ),
             "ERROR: Not an admin"
         );
+=======
+    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+        require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminOpenOracle, ds.adminOpenOracleAddress), "Admin role does not exist.");
+>>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 
         _;
     }

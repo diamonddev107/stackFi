@@ -431,6 +431,7 @@ contract Comptroller is Pausable, IComptroller {
         uint256 oldFees = ds.marketSwapFees;
         ds.marketSwapFees = fees;
 
+<<<<<<< HEAD
         emit MarketSwapFeesUpdated(
             msg.sender,
             oldFees,
@@ -439,6 +440,13 @@ contract Comptroller is Pausable, IComptroller {
         );
         return true;
     }
+=======
+	modifier authComptroller() {
+    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminComptroller, ds.adminComptrollerAddress), "Admin role does not exist.");
+		_;
+	}
+>>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 
     function updateReserveFactor(uint256 _reserveFactor)
         external

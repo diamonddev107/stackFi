@@ -102,6 +102,7 @@ contract Loan is Pausable, ILoan {
         _unpause();
     }
 
+<<<<<<< HEAD
     function isPausedLoan() external view virtual override returns (bool) {
         return _paused();
     }
@@ -115,4 +116,11 @@ contract Loan is Pausable, ILoan {
         );
         _;
     }
+=======
+	modifier authLoan() {
+    	AppStorageOpen storage ds = LibOpen.diamondStorage();
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminLoan, ds.adminLoanAddress), "Admin role does not exist.");
+		_;
+	}
+>>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 }
