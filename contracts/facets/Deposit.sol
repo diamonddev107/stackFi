@@ -4,120 +4,188 @@ pragma solidity 0.8.1;
 import "../util/Pausable.sol";
 // import "./mockup/IMockBep20.sol";
 import "../libraries/LibOpen.sol";
-import { YieldLedger } from "../libraries/AppStorageOpen.sol";
+import {YieldLedger} from "../libraries/AppStorageOpen.sol";
 
-contract Deposit is Pausable, IDeposit{
-	
-	constructor() 
-	{
-    	// AppStorage storage ds = LibOpen.diamondStorage(); 
-		// ds.adminDepositAddress = msg.sender;
-		// ds.deposit = IDeposit(msg.sender);
-	}
+contract Deposit is Pausable, IDeposit {
+    constructor() {
+        // AppStorage storage ds = LibOpen.diamondStorage();
+        // ds.adminDepositAddress = msg.sender;
+        // ds.deposit = IDeposit(msg.sender);
+    }
 
-	// receive() external payable {
-    // 	AppStorage storage ds = LibOpen.diamondStorage(); 
-	// 	payable(ds.superAdminAddress).transfer(_msgValue());
-	// }
-	
-	// fallback() external payable {
-    // 	AppStorage storage ds = LibOpen.diamondStorage(); 
-	// 	payable(ds.superAdminAddress).transfer(_msgValue());
-	// }
+    // receive() external payable {
+    // 	AppStorage storage ds = LibOpen.diamondStorage();
+    // 	payable(ds.superAdminAddress).transfer(_msgValue());
+    // }
 
-	function hasAccount(address _account) external view override returns (bool)	{
-		LibOpen._hasAccount(_account);
-		return true;
-	}
+    // fallback() external payable {
+    // 	AppStorage storage ds = LibOpen.diamondStorage();
+    // 	payable(ds.superAdminAddress).transfer(_msgValue());
+    // }
 
-	function savingsBalance(bytes32 _market, bytes32 _commitment) external view override returns (uint) {
-		return LibOpen._accountBalance(msg.sender, _market, _commitment, SAVINGSTYPE.BOTH);
-	}
+    function hasAccount(address _account)
+        external
+        view
+        override
+        returns (bool)
+    {
+        LibOpen._hasAccount(_account);
+        return true;
+    }
 
-	function convertYield(bytes32 _market, bytes32 _commitment) external override nonReentrant() returns (bool) {
-		uint _amount;
-		LibOpen._convertYield(msg.sender, _market,_commitment, _amount);
-		return true;
-	}
+    function savingsBalance(bytes32 _market, bytes32 _commitment)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return
+            LibOpen._accountBalance(
+                msg.sender,
+                _market,
+                _commitment,
+                SAVINGSTYPE.BOTH
+            );
+    }
 
-	function hasYield(bytes32 _market, bytes32 _commitment) external view override returns (bool) {
-    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
-		YieldLedger storage yield = ds.indYieldRecord[msg.sender][_market][_commitment];
-		LibOpen._hasYield(yield);
-		return true;
-	}
- 
-	function avblReservesDeposit(bytes32 _market) external view override returns (uint) {
-		return LibOpen._avblReservesDeposit(_market);
-	}
+    function convertYield(bytes32 _market, bytes32 _commitment)
+        external
+        override
+        nonReentrant
+        returns (bool)
+    {
+        uint256 _amount;
+        LibOpen._convertYield(msg.sender, _market, _commitment, _amount);
+        return true;
+    }
 
-	function utilisedReservesDeposit(bytes32 _market) external view override returns(uint) {
-    	return LibOpen._utilisedReservesDeposit(_market);
-	}
+    function hasYield(bytes32 _market, bytes32 _commitment)
+        external
+        view
+        override
+        returns (bool)
+    {
+        AppStorageOpen storage ds = LibOpen.diamondStorage();
+        YieldLedger storage yield = ds.indYieldRecord[msg.sender][_market][
+            _commitment
+        ];
+        LibOpen._hasYield(yield);
+        return true;
+    }
 
-	function _updateUtilisation(bytes32 _market, uint _amount, uint _num) private 
-	{
-    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
-		if (_num == 0)	{
-			ds.marketUtilisationDeposit[_market] += _amount;
-		} else if (_num == 1)	{
-			ds.marketUtilisationDeposit[_market] -= _amount;
-		}
-	}
+    function avblReservesDeposit(bytes32 _market)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return LibOpen._avblReservesDeposit(_market);
+    }
 
-	function hasDeposit(bytes32 _market, bytes32 _commitment) external view override returns (bool) {
-		LibOpen._hasDeposit(msg.sender,_market, _commitment);
-		return true;
-	}
+    function utilisedReservesDeposit(bytes32 _market)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return LibOpen._utilisedReservesDeposit(_market);
+    }
 
-	// function createDeposit(
-	// 	bytes32 _market,
-	// 	bytes32 _commitment,
-	// 	uint256 _amount
-	// ) external override nonReentrant() returns (bool) {
-		
-	// 	LibOpen._createNewDeposit(_market,_commitment, _amount, msg.sender);
-	// 	return true;
-	// }
+    function _updateUtilisation(
+        bytes32 _market,
+        uint256 _amount,
+        uint256 _num
+    ) private {
+        AppStorageOpen storage ds = LibOpen.diamondStorage();
+        if (_num == 0) {
+            ds.marketUtilisationDeposit[_market] += _amount;
+        } else if (_num == 1) {
+            ds.marketUtilisationDeposit[_market] -= _amount;
+        }
+    }
 
-	function withdrawDeposit (bytes32 _market, bytes32 _commitment,uint _amount,SAVINGSTYPE _request) external override nonReentrant() returns (bool) {
-		LibOpen._withdrawDeposit(msg.sender, _market, _commitment, _amount, _request);
-		return true;	
-	}
+    function hasDeposit(bytes32 _market, bytes32 _commitment)
+        external
+        view
+        override
+        returns (bool)
+    {
+        LibOpen._hasDeposit(msg.sender, _market, _commitment);
+        return true;
+    }
 
-	function addToDeposit(bytes32 _market, bytes32 _commitment, uint _amount) external override nonReentrant() returns(bool) {
-		LibOpen._addToDeposit(msg.sender, _market, _commitment, _amount);
-		return true;
-	}
-    function getFairPriceDeposit(uint _requestId) external view override returns (uint price){
-		price = LibOpen._getFairPrice(_requestId);
-	}
+    // function createDeposit(
+    // 	bytes32 _market,
+    // 	bytes32 _commitment,
+    // 	uint256 _amount
+    // ) external override nonReentrant() returns (bool) {
 
+    // 	LibOpen._createNewDeposit(_market,_commitment, _amount, msg.sender);
+    // 	return true;
+    // }
 
-// Implementing contract pausability.
-	function pauseDeposit() external override authDeposit() nonReentrant() {
-		_pause();
-	}
-	
-	function unpauseDeposit() external override authDeposit() nonReentrant() {
-		_unpause();   
-	}
+    function withdrawDeposit(
+        bytes32 _market,
+        bytes32 _commitment,
+        uint256 _amount,
+        SAVINGSTYPE _request
+    ) external override nonReentrant returns (bool) {
+        LibOpen._withdrawDeposit(
+            msg.sender,
+            _market,
+            _commitment,
+            _amount,
+            _request
+        );
+        return true;
+    }
 
-	function isPausedDeposit() external view override virtual returns (bool) {
-		return _paused();
-	}
+    function addToDeposit(
+        bytes32 _market,
+        bytes32 _commitment,
+        uint256 _amount
+    ) external override nonReentrant returns (bool) {
+        LibOpen._addToDeposit(msg.sender, _market, _commitment, _amount);
+        return true;
+    }
 
-	// //For upgradibility test
-	// function upgradeTestAccount(address _account) external view returns (bool success) {
+    function getFairPriceDeposit(uint256 _requestId)
+        external
+        view
+        override
+        returns (uint256 price)
+    {
+        price = LibOpen._getFairPrice(_requestId);
+    }
+
+    // Implementing contract pausability.
+    function pauseDeposit() external override authDeposit nonReentrant {
+        _pause();
+    }
+
+    function unpauseDeposit() external override authDeposit nonReentrant {
+        _unpause();
+    }
+
+    function isPausedDeposit() external view virtual override returns (bool) {
+        return _paused();
+    }
+
+    // //For upgradibility test
+    // function upgradeTestAccount(address _account) external view returns (bool success) {
     // 	LibOpen._hasAccount(_account);
-	// 	LibOpen._hasLoanAccount(_account);
-	// 	success = true;
-	// }
+    // 	LibOpen._hasLoanAccount(_account);
+    // 	success = true;
+    // }
 
-	modifier authDeposit() {
-    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+    modifier authDeposit() {
+        AppStorageOpen storage ds = LibOpen.diamondStorage();
 
-		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminDeposit, ds.adminDepositAddress), "ERROR: ERROR: Not an admin");
-		_;
-	}
+        require(
+            LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) ||
+                LibOpen._hasAdminRole(ds.adminDeposit, ds.adminDepositAddress),
+            "ERROR: ERROR: Not an admin"
+        );
+        _;
+    }
 }

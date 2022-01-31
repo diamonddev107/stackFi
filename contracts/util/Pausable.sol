@@ -5,8 +5,7 @@ pragma solidity 0.8.1;
 import "./Context.sol";
 
 abstract contract Pausable is Context {
-
-	bool isReentrant = false;
+    bool isReentrant = false;
     bool private isPaused;
     event PauseState(address indexed _pauser, bool isPaused);
 
@@ -18,8 +17,8 @@ abstract contract Pausable is Context {
         require(!_paused(), "Paused status");
         _;
     }
-                                                                                                                                                                                                                                              
-    modifier whenPaused() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
+    modifier whenPaused() {
         require(_paused(), "Not paused status");
         _;
     }
@@ -34,18 +33,21 @@ abstract contract Pausable is Context {
         emit PauseState(_msgSender(), false);
     }
 
-    function _paused() internal virtual view returns(bool) {
+    function _paused() internal view virtual returns (bool) {
         return isPaused;
     }
 
     function _checkPauseState() internal view {
-        require(isPaused == false,"The contract is paused. Transfer functions are temporarily disabled");
+        require(
+            isPaused == false,
+            "The contract is paused. Transfer functions are temporarily disabled"
+        );
     }
 
     modifier nonReentrant() {
-		require(isReentrant == false, "Re-entrant alert!");
-		isReentrant = true;
-		_;
-		isReentrant = false;
-	}
+        require(isReentrant == false, "Re-entrant alert!");
+        isReentrant = true;
+        _;
+        isReentrant = false;
+    }
 }

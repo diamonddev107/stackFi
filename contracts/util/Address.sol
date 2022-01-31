@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.1;
 
-
 library Address {
     /**
      * @dev Returns true if `account` is a contract.
@@ -17,7 +16,7 @@ library Address {
      *  - an externally-owned account
      *  - a contract in construction
      *  - an address where a contract will be created
-     *  - an address where a contract lived, but was destroyed                                                  
+     *  - an address where a contract lived, but was destroyed
      * ====
      */
     function isContract(address account) internal view returns (bool) {
