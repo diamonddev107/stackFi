@@ -8,20 +8,6 @@ import "../libraries/AppStorageOpen.sol";
 contract Comptroller is Pausable, IComptroller {
     // using Address for address;
 
-<<<<<<< HEAD
-    event APRupdated(
-        address indexed admin,
-        uint256 indexed newAPR,
-        uint256 oldAPR,
-        uint256 indexed timestamp
-    );
-    event APYupdated(
-        address indexed admin,
-        uint256 indexed newAPY,
-        uint256 oldAPY,
-        uint256 indexed timestamp
-    );
-=======
 	event APRupdated(address indexed admin, uint indexed newAPR, uint indexed timestamp);
 	event APYupdated(address indexed admin, uint indexed newAPY, uint indexed timestamp);
 	
@@ -35,7 +21,6 @@ contract Comptroller is Pausable, IComptroller {
 	event YieldConversionFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
 	event MarketSwapFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
 	event MaxWithdrawalUpdated(address indexed admin, uint indexed newFactor, uint indexed newBlockLimit, uint oldFactor, uint oldBlockLimit, uint timestamp);
->>>>>>> dinh-diamond2
 
     event ReserveFactorUpdated(
         address indexed admin,
@@ -187,25 +172,6 @@ contract Comptroller is Pausable, IComptroller {
         return LibOpen._getAprLastTime(_commitment);
     }
 
-<<<<<<< HEAD
-    function getApyTimeLength(bytes32 _commitment)
-        external
-        view
-        override
-        returns (uint256)
-    {
-        return LibOpen._getApyTimeLength(_commitment);
-    }
-
-    function getAprTimeLength(bytes32 _commitment)
-        external
-        view
-        override
-        returns (uint256)
-    {
-        return LibOpen._getAprTimeLength(_commitment);
-    }
-=======
 	// SETTERS
 	function updateAPY(bytes32 _commitment, uint _apy) external override authComptroller() nonReentrant() returns (bool) {
 		AppStorageOpen storage ds = LibOpen.diamondStorage(); 
@@ -231,7 +197,6 @@ contract Comptroller is Pausable, IComptroller {
 		emit APRupdated(msg.sender, _apr, block.timestamp);
 		return true;
 	}
->>>>>>> dinh-diamond2
 
     function getCommitment(uint256 _index)
         external
@@ -476,22 +441,11 @@ contract Comptroller is Pausable, IComptroller {
         uint256 oldFees = ds.marketSwapFees;
         ds.marketSwapFees = fees;
 
-<<<<<<< HEAD
-        emit MarketSwapFeesUpdated(
-            msg.sender,
-            oldFees,
-            ds.marketSwapFees,
-            block.timestamp
-        );
-        return true;
-    }
-=======
 	modifier authComptroller() {
     	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
 		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminComptroller, ds.adminComptrollerAddress), "ERROR: Not an admin");
 		_;
 	}
->>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 
     function updateReserveFactor(uint256 _reserveFactor)
         external

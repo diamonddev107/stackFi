@@ -9,17 +9,6 @@ import "../libraries/AppStorageOpen.sol";
 contract TokenList is Pausable, ITokenList {
     constructor() {}
 
-<<<<<<< HEAD
-    function isMarketSupported(bytes32 _market)
-        external
-        view
-        override
-        returns (bool)
-    {
-        LibOpen._isMarketSupported(_market);
-        return true;
-    }
-=======
  	event MarketSupportAdded(bytes32 indexed _market,uint256 _decimals,address indexed MarketAddress_,uint256 indexed _timestamp);
 	event MarketSupportUpdated(bytes32 indexed _market,uint256 _decimals,address indexed MarketAddress_,uint256 indexed _timestamp);
 	event MarketSupportRemoved(bytes32 indexed _market, uint256 indexed _timestamp);
@@ -39,7 +28,6 @@ contract TokenList is Pausable, ITokenList {
 
   constructor() {
   }
->>>>>>> dinh-diamond2
 
     function getMarketAddress(bytes32 _market)
         external
@@ -50,16 +38,6 @@ contract TokenList is Pausable, ITokenList {
         return LibOpen._getMarketAddress(_market);
     }
 
-<<<<<<< HEAD
-    function getMarketDecimal(bytes32 _market)
-        external
-        view
-        override
-        returns (uint256)
-    {
-        return LibOpen._getMarketDecimal(_market);
-    }
-=======
   function getMarketDecimal(bytes32 _market) external view override returns (uint) { 
     return LibOpen._getMarketDecimal(_market);
   }
@@ -80,7 +58,6 @@ contract TokenList is Pausable, ITokenList {
     emit MarketSupportAdded(_market,_decimals,tokenAddress_,block.timestamp);
     return true;
   }
->>>>>>> dinh-diamond2
 
     // ADD A NEW TOKEN SUPPORT
     function addMarketSupport(
@@ -93,15 +70,6 @@ contract TokenList is Pausable, ITokenList {
         return true;
     }
 
-<<<<<<< HEAD
-    function minAmountCheck(bytes32 _market, uint256 _amount)
-        external
-        view
-        override
-    {
-        LibOpen._minAmountCheck(_market, _amount);
-    }
-=======
   function removeMarketSupport(bytes32 _market) external override authTokenList() returns(bool) {
     AppStorageOpen storage ds = LibOpen.diamondStorage(); 
 
@@ -136,7 +104,6 @@ contract TokenList is Pausable, ITokenList {
 	  emit MarketSupportUpdated(_market,_decimals,tokenAddress_,block.timestamp);
     return true;
   }
->>>>>>> dinh-diamond2
 
     function removeMarketSupport(bytes32 _market)
         external
@@ -161,27 +128,6 @@ contract TokenList is Pausable, ITokenList {
     //   // return LibOpen._quantifyAmount(_market, _amount);
     // }
 
-<<<<<<< HEAD
-    //SecondaryToken
-    function isMarket2Supported(bytes32 _market)
-        external
-        view
-        override
-        returns (bool)
-    {
-        LibOpen._isMarket2Supported(_market);
-        return true;
-    }
-
-    function getMarket2Address(bytes32 _market)
-        external
-        view
-        override
-        returns (address)
-    {
-        return LibOpen._getMarket2Address(_market);
-    }
-=======
   function getMarket2Decimal(bytes32 _market) external view override returns (uint) {
     return LibOpen._getMarket2Decimal(_market);
   }
@@ -237,7 +183,6 @@ contract TokenList is Pausable, ITokenList {
     emit Market2Updated(_market,_decimals,tokenAddress_,block.timestamp);
     return true;
   }
->>>>>>> dinh-diamond2
 
     function getMarket2Decimal(bytes32 _market)
         external
@@ -258,23 +203,11 @@ contract TokenList is Pausable, ITokenList {
         return true;
     }
 
-<<<<<<< HEAD
-    function removeMarket2Support(bytes32 _market)
-        external
-        override
-        authTokenList
-        returns (bool)
-    {
-        LibOpen._removeMarket2Support(_market);
-        return true;
-    }
-=======
 	modifier authTokenList() {
     AppStorageOpen storage ds = LibOpen.diamondStorage(); 
 		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminTokenList, ds.adminTokenListAddress), "ERROR: Not an admin");	
 	  _;
 	}
->>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
 
     function updateMarket2Support(
         bytes32 _market,
