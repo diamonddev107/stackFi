@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.1;
 import "../util/Pausable.sol";
-// import "./mockup/IMockBep20.sol";
+
 import "../libraries/LibOpen.sol";
 import "../libraries/AppStorageOpen.sol";
 
@@ -440,12 +440,6 @@ contract Comptroller is Pausable, IComptroller {
         AppStorageOpen storage ds = LibOpen.diamondStorage();
         uint256 oldFees = ds.marketSwapFees;
         ds.marketSwapFees = fees;
-
-	modifier authComptroller() {
-    	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
-		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminComptroller, ds.adminComptrollerAddress), "ERROR: Not an admin");
-		_;
-	}
 
     function updateReserveFactor(uint256 _reserveFactor)
         external

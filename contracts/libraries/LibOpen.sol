@@ -438,6 +438,7 @@ library LibOpen {
         bytes32 _commitment
     ) internal authContract(DEPOSIT_ID) {
         AppStorageOpen storage ds = diamondStorage();
+	}
 
 // =========== Loan Functions ===========
 	
@@ -483,13 +484,6 @@ library LibOpen {
         CollateralRecords storage collateral = ds.indCollateralRecords[
             _account
         ][_market][_commitment];
-
-	function _accruedYield(LoanAccount storage loanAccount, CollateralRecords storage collateral, CollateralYield storage cYield) internal {
-		bytes32 _commitment = cYield.commitment;
-		uint256 aggregateYield;
-		uint256 num = collateral.id-1;
-		
-		(cYield.oldLengthAccruedYield, cYield.oldTime, aggregateYield) = _calcAPY(_commitment, cYield.oldLengthAccruedYield, cYield.oldTime, aggregateYield);
 
     function _accruedYield(
         LoanAccount storage loanAccount,
