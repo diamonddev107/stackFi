@@ -3,10 +3,12 @@ pragma solidity 0.8.1;
 import "../util/Pausable.sol";
 // import "./mockup/IMockBep20.sol";
 import "../libraries/LibOpen.sol";
+import "../libraries/AppStorageOpen.sol";
 
 contract Comptroller is Pausable, IComptroller {
     // using Address for address;
 
+<<<<<<< HEAD
     event APRupdated(
         address indexed admin,
         uint256 indexed newAPR,
@@ -19,6 +21,21 @@ contract Comptroller is Pausable, IComptroller {
         uint256 oldAPY,
         uint256 indexed timestamp
     );
+=======
+	event APRupdated(address indexed admin, uint indexed newAPR, uint indexed timestamp);
+	event APYupdated(address indexed admin, uint indexed newAPY, uint indexed timestamp);
+	
+	event ReserveFactorUpdated(address indexed admin, uint oldReserveFactor, uint indexed newReserveFactor, uint indexed timestamp);
+	event LoanIssuanceFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event LoanClosureFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event LoanPreClosureFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event DepositPreClosureFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event DepositWithdrawalFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event CollateralReleaseFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event YieldConversionFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event MarketSwapFeesUpdated(address indexed admin, uint oldFees, uint indexed newFees, uint indexed timestamp);
+	event MaxWithdrawalUpdated(address indexed admin, uint indexed newFactor, uint indexed newBlockLimit, uint oldFactor, uint oldBlockLimit, uint timestamp);
+>>>>>>> dinh-diamond2
 
     event ReserveFactorUpdated(
         address indexed admin,
@@ -170,6 +187,7 @@ contract Comptroller is Pausable, IComptroller {
         return LibOpen._getAprLastTime(_commitment);
     }
 
+<<<<<<< HEAD
     function getApyTimeLength(bytes32 _commitment)
         external
         view
@@ -187,6 +205,33 @@ contract Comptroller is Pausable, IComptroller {
     {
         return LibOpen._getAprTimeLength(_commitment);
     }
+=======
+	// SETTERS
+	function updateAPY(bytes32 _commitment, uint _apy) external override authComptroller() nonReentrant() returns (bool) {
+		AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		APY storage apyUpdate = ds.indAPYRecords[_commitment];
+
+		// if(apyUpdate.time.length != apyUpdate.apyChanges.length) return false;
+		apyUpdate.commitment = _commitment;
+		apyUpdate.time.push(block.timestamp);
+		apyUpdate.apyChanges.push(_apy);
+		emit APYupdated(msg.sender, _apy, block.timestamp);
+		return true;
+	}
+
+	function updateAPR(bytes32 _commitment, uint _apr) external override authComptroller() nonReentrant() returns (bool ) {
+		AppStorageOpen storage ds = LibOpen.diamondStorage();
+		APR storage aprUpdate = ds.indAPRRecords[_commitment];
+
+		if(aprUpdate.time.length != aprUpdate.aprChanges.length) return false;
+
+		aprUpdate.commitment = _commitment;
+		aprUpdate.time.push(block.timestamp);
+		aprUpdate.aprChanges.push(_apr);
+		emit APRupdated(msg.sender, _apr, block.timestamp);
+		return true;
+	}
+>>>>>>> dinh-diamond2
 
     function getCommitment(uint256 _index)
         external
@@ -443,7 +488,7 @@ contract Comptroller is Pausable, IComptroller {
 =======
 	modifier authComptroller() {
     	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
-		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminComptroller, ds.adminComptrollerAddress), "Admin role does not exist.");
+		require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminComptroller, ds.adminComptrollerAddress), "ERROR: Not an admin");
 		_;
 	}
 >>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)

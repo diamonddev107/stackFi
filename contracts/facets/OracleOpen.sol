@@ -38,6 +38,7 @@ contract OracleOpen is Pausable, IOracleOpen {
         LibOpen._fairPrice(_requestId, _fPrice, _market, _amount);
     }
 
+<<<<<<< HEAD
     function liquidationTrigger(address account, uint256 loanId)
         external
         override
@@ -48,6 +49,12 @@ contract OracleOpen is Pausable, IOracleOpen {
         LibOpen._liquidation(account, loanId);
         return true;
     }
+=======
+    // function liquidationTrigger(address account, uint loanId) external override onlyAdmin() nonReentrant() returns(bool) {
+    //     LibOpen._liquidation(account, loanId);
+    //     return true;
+    // }
+>>>>>>> dinh-diamond2
 
     function pauseOracle() external override onlyAdmin nonReentrant {
         _pause();
@@ -74,8 +81,12 @@ contract OracleOpen is Pausable, IOracleOpen {
         );
 =======
     	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+<<<<<<< HEAD
         require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminOpenOracle, ds.adminOpenOracleAddress), "Admin role does not exist.");
 >>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
+=======
+        require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress) || LibOpen._hasAdminRole(ds.adminOpenOracle, ds.adminOpenOracleAddress), "ERROR: Not an admin");
+>>>>>>> dinh-diamond2
 
         _;
     }
