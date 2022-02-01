@@ -66,9 +66,6 @@ async function deployDiamond() {
     facetId++;
   }
 
-<<<<<<< HEAD
-  console.log("Begin diamondcut facets");
-=======
     console.log("Begin deploying facets");
     const OpenNames = [
         'TokenList',
@@ -96,7 +93,6 @@ async function deployDiamond() {
         })
         facetId ++;
     }
->>>>>>> dinh-diamond2
 
   // deploy DiamondInit
   // DiamondInit provides a function that is called when the diamond is upgraded to initialize state variables
@@ -172,35 +168,6 @@ async function deployOpenFacets(diamondAddress) {
     diamondAddress
   );
 
-<<<<<<< HEAD
-  console.log("Begin deploying facets");
-  const OpenNames = [
-    "TokenList",
-    "Comptroller",
-    "Liquidator",
-    "Reserve",
-    "OracleOpen",
-    "Loan",
-    "Loan1",
-    "Deposit",
-    "AccessRegistry",
-  ];
-  const opencut = [];
-  let facetId = 10;
-  for (const FacetName of OpenNames) {
-    const Facet = await ethers.getContractFactory(FacetName);
-    const facet = await Facet.deploy();
-    await facet.deployed();
-    console.log(`${FacetName} deployed: ${facet.address}`);
-    opencut.push({
-      facetAddress: facet.address,
-      action: FacetCutAction.Add,
-      functionSelectors: getSelectors(facet),
-      facetId: facetId,
-    });
-    facetId++;
-  }
-=======
     console.log("Begin deploying facets");
     const OpenNames = [
         'TokenList',
@@ -228,7 +195,6 @@ async function deployOpenFacets(diamondAddress) {
         })
         facetId ++;
     }
->>>>>>> dinh-diamond2
 
   console.log("Begin diamondcut facets");
 

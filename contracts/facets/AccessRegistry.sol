@@ -5,168 +5,152 @@ import "../util/Pausable.sol";
 import "../libraries/LibOpen.sol";
 
 contract AccessRegistry is Pausable, IAccessRegistry {
-    constructor() {
-        // AppStorageOpen storage ds = LibOpen.diamondStorage();
-        // ds.superAdmin = keccak256("AccessRegistry.admin");
-        // LibOpen._addAdminRole(keccak256("AccessRegistry.admin"), ds.contractOwner);
-    }
+  
+	event AdminRoleDataGranted(
+		bytes32 indexed role,
+		address indexed account,
+		address indexed sender
+	);
 
-    // receive() external payable {
-    // 	AppStorageOpen storage ds = LibOpen.diamondStorage();
-    //     payable(ds.contractOwner).transfer(_msgValue());
-    // }
+	event AdminRoleDataRevoked(
+		bytes32 indexed role,
+		address indexed account,
+		address indexed sender
+	);
 
-    // fallback() external payable {
-    // 	AppStorageOpen storage ds = LibOpen.diamondStorage();
-    //     payable(ds.contractOwner).transfer(_msgValue());
-    // }
+	event RoleGranted(
+		bytes32 indexed role,
+		address indexed account,
+		address indexed sender
+	);
 
-    function hasRole(bytes32 role, address account)
-        external
-        view
-        override
-        returns (bool)
-    {
-        return LibOpen._hasRole(role, account);
-    }
+	event RoleRevoked(
+		bytes32 indexed role,
+		address indexed account,
+		address indexed sender
+	);
+	constructor() {
+		// AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		// ds.superAdmin = keccak256("AccessRegistry.admin");
+		// LibOpen._addAdminRole(keccak256("AccessRegistry.admin"), ds.contractOwner);
+	}
+		
+	// receive() external payable {
+	// 	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+	//     payable(ds.contractOwner).transfer(_msgValue());
+	// }
 
-    function addRole(bytes32 role, address account)
-        external
-        override
-        onlyAdmin
-    {
-        require(
-            !LibOpen._hasRole(role, account),
-            "Role already exists. Please create a different role"
-        );
-        LibOpen._addRole(role, account);
-    }
+	// fallback() external payable {
+	// 	AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+	//     payable(ds.contractOwner).transfer(_msgValue());
+	// }
 
-    function removeRole(bytes32 role, address account)
-        external
-        override
-        onlyAdmin
-    {
-        require(LibOpen._hasRole(role, account), "Role does not exist.");
+	function hasRole(bytes32 role, address account) public view override returns (bool) {
+		return LibOpen._hasRole(role, account);
+	}
 
-        LibOpen._revokeRole(role, account);
-    }
+	function addRole(bytes32 role, address account) public override onlyAdmin {
+		require(!hasRole(role, account), "Role already exists. Please create a different role");
+		AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		ds._roles[role]._members[account] = true;
+		emit RoleGranted(role, account, msg.sender);
+	}
 
-    function renounceRole(bytes32 role, address account)
-        external
-        override
-        nonReentrant
-    {
-        require(LibOpen._hasRole(role, account), "Role does not exist.");
-        require(_msgSender() == account, "Inadequate permissions");
+	function removeRole(bytes32 role, address account) external override onlyAdmin {
+		require(hasRole(role, account), "Role does not exist.");
+		revokeRole(role, account);
+	}
 
-        LibOpen._revokeRole(role, account);
-    }
+	function renounceRole(bytes32 role, address account) external override nonReentrant() {
+		require(hasRole(role, account), "Role does not exist.");
+		require(_msgSender() == account, "Inadequate permissions");
 
-    function transferRole(
-        bytes32 role,
-        address oldAccount,
-        address newAccount
-    ) external override nonReentrant {
-        require(
-            LibOpen._hasRole(role, oldAccount) && _msgSender() == oldAccount,
-            "Role does not exist."
-        );
+		revokeRole(role, account);
+	}
 
-        LibOpen._revokeRole(role, oldAccount);
-        LibOpen._addRole(role, newAccount);
-    }
+	function revokeRole(bytes32 role, address account) private {
+		AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		ds._roles[role]._members[account] = false;
+		emit RoleRevoked(role, account, msg.sender);
+	}
 
-    function hasAdminRole(bytes32 role, address account)
-        external
-        view
-        override
-        returns (bool)
-    {
-        return LibOpen._hasAdminRole(role, account);
-    }
+	function transferRole(
+		bytes32 role,
+		address oldAccount,
+		address newAccount
+	) external override nonReentrant() {
+		require(
+				hasRole(role, oldAccount) && _msgSender() == oldAccount,
+				"Role does not exist."
+		);
 
-    function addAdminRole(bytes32 role, address account)
-        external
-        override
-        onlyAdmin
-    {
-        require(
-            !LibOpen._hasAdminRole(role, account),
-            "Role already exists. Please create a different role"
-        );
-        LibOpen._addAdminRole(role, account);
-    }
+		revokeRole(role, oldAccount);
+		addRole(role, newAccount);
+	}
 
-    function removeAdminRole(bytes32 role, address account)
-        external
-        override
-        onlyAdmin
-    {
-        require(LibOpen._hasAdminRole(role, account), "Role does not exist.");
-        LibOpen._revokeAdmin(role, account);
-    }
+	function hasAdminRole(bytes32 role, address account) public view override returns (bool) {
+		return LibOpen._hasAdminRole(role, account);
+	}
 
-    function adminRoleTransfer(
-        bytes32 role,
-        address oldAccount,
-        address newAccount
-    ) external override onlyAdmin {
-        require(
-            LibOpen._hasAdminRole(role, oldAccount),
-            "Role already exists. Please create a different role"
-        );
+	function addAdminRole(bytes32 role, address account) public override onlyAdmin {
+		require(
+				!hasAdminRole(role, account),
+				"Role already exists. Please create a different role"
+		);
+		AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		ds._adminRoles[role]._adminMembers[account] = true;
+		emit AdminRoleDataGranted(role, account, msg.sender);
+	}
 
-        LibOpen._revokeAdmin(role, oldAccount);
-        LibOpen._addAdminRole(role, newAccount);
-    }
+	function removeAdminRole(bytes32 role, address account) external override onlyAdmin {
+		require(hasAdminRole(role, account), "Role does not exist.");
+		revokeAdmin(role, account);
+	}
 
-    function adminRoleRenounce(bytes32 role, address account)
-        external
-        override
-        onlyAdmin
-    {
-        require(LibOpen._hasAdminRole(role, account), "Role does not exist.");
-        require(_msgSender() == account, "Inadequate permissions");
+	function revokeAdmin(bytes32 role, address account) private {
+		AppStorageOpen storage ds = LibOpen.diamondStorage(); 
+		ds._adminRoles[role]._adminMembers[account] = false;
+		emit AdminRoleDataRevoked(role, account, msg.sender);
+	}
 
-        LibOpen._revokeAdmin(role, account);
-    }
-<<<<<<< HEAD
+	function adminRoleTransfer(
+		bytes32 role,
+		address oldAccount,
+		address newAccount 
+	) external override onlyAdmin
+	{
+		require(
+				hasAdminRole(role, oldAccount),
+				"Role already exists. Please create a different role"
+		);
 
-    modifier onlyAdmin() {
-        AppStorageOpen storage ds = LibOpen.diamondStorage();
-        require(
-            LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress),
-            "ERROR: Not an admin"
-        );
-=======
-    
-    modifier onlyAdmin {
-    	AppStorageOpen storage ds = LibOpen.diamondStorage();
-<<<<<<< HEAD
-        require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress), "Admin role does not exist.");
->>>>>>> parent of be434cc (update auth<contractName>() ERROR, deposit contract visibility)
-=======
-        require(LibOpen._hasAdminRole(ds.superAdmin, ds.superAdminAddress), "ERROR: Not an admin");
->>>>>>> dinh-diamond2
-        _;
-    }
+		revokeAdmin(role, oldAccount);
+		addAdminRole(role, newAccount);
+	}
 
-    function pauseAccessRegistry() external override onlyAdmin nonReentrant {
-        _pause();
-    }
+	function adminRoleRenounce(bytes32 role, address account) external override onlyAdmin {
+		require(hasAdminRole(role, account), "Role does not exist.");
+		require(_msgSender() == account, "Inadequate permissions");
 
-    function unpauseAccessRegistry() external override onlyAdmin nonReentrant {
-        _unpause();
-    }
+		revokeAdmin(role, account);
+	}
+	
+	modifier onlyAdmin {
+		AppStorageOpen storage ds = LibOpen.diamondStorage();
+		require(hasAdminRole(ds.superAdmin, ds.superAdminAddress), "ERROR: Not an admin");
+		_;
+	}
 
-    function isPausedAccessRegistry()
-        external
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return _paused();
-    }
+	function pauseAccessRegistry() external override onlyAdmin() nonReentrant() {                                                                                                  
+		_pause();
+	}
+	
+	function unpauseAccessRegistry() external override onlyAdmin() nonReentrant() {
+		_unpause();   
+	}
+
+	function isPausedAccessRegistry() external view override virtual returns (bool) {                                                                                                                                                                                                                                                               
+		return _paused();
+	}
+
 }

@@ -15,25 +15,6 @@ const { deployDiamond } = require("../scripts/deploy_all.js");
 const { addMarkets } = require("../scripts/deploy_all.js");
 
 describe("===== Deposit Test =====", function () {
-<<<<<<< HEAD
-  let diamondAddress;
-  let diamondCutFacet;
-  let diamondLoupeFacet;
-  let tokenList;
-  let comptroller;
-  let deposit;
-  let loan;
-  let loan1;
-  let oracle;
-  let reserve;
-  let library;
-  let liquidator;
-  let accounts;
-  let contractOwner;
-  let bepUsdt;
-  let bepBtc;
-  let bepUsdc;
-=======
     let diamondAddress
 	let diamondCutFacet
 	let diamondLoupeFacet
@@ -51,7 +32,6 @@ describe("===== Deposit Test =====", function () {
 	let bepUsdt
 	let bepBtc
 	let bepUsdc
->>>>>>> dinh-diamond2
 
   let rets;
   const addresses = [];
@@ -84,17 +64,6 @@ describe("===== Deposit Test =====", function () {
     diamondAddress = await deployDiamond();
     rets = await addMarkets(diamondAddress);
 
-<<<<<<< HEAD
-    diamondCutFacet = await ethers.getContractAt(
-      "DiamondCutFacet",
-      diamondAddress
-    );
-    diamondLoupeFacet = await ethers.getContractAt(
-      "DiamondLoupeFacet",
-      diamondAddress
-    );
-    library = await ethers.getContractAt("LibOpen", diamondAddress);
-=======
 		tokenList = await ethers.getContractAt('TokenList', diamondAddress)
 		comptroller = await ethers.getContractAt('Comptroller', diamondAddress)
 		deposit = await ethers.getContractAt("Deposit", diamondAddress)
@@ -103,7 +72,6 @@ describe("===== Deposit Test =====", function () {
 		oracle = await ethers.getContractAt('OracleOpen', diamondAddress)
 		liquidator = await ethers.getContractAt('Liquidator', diamondAddress)
 		reserve = await ethers.getContractAt('Reserve', diamondAddress)
->>>>>>> dinh-diamond2
 
     tokenList = await ethers.getContractAt("TokenList", diamondAddress);
     comptroller = await ethers.getContractAt("Comptroller", diamondAddress);
@@ -166,61 +134,6 @@ describe("===== Deposit Test =====", function () {
   it("Check Deposit", async () => {
     const depositAmount = 0x200;
 
-<<<<<<< HEAD
-    // USDT
-
-    await expect(
-      deposit
-        .connect(accounts[1])
-        .addToDeposit(symbolUsdt, comit_NONE, depositAmount, {
-          gasLimit: 5000000,
-        })
-    ).emit(library, "NewDeposit");
-    expect(await bepUsdt.balanceOf(accounts[1].address)).to.equal(0xfe00);
-    expect(await reserve.avblMarketReserves(symbolUsdt)).to.equal(0x200);
-
-    await expect(
-      deposit
-        .connect(accounts[1])
-        .addToDeposit(symbolUsdt, comit_NONE, depositAmount, {
-          gasLimit: 5000000,
-        })
-    ).emit(library, "DepositAdded");
-    expect(await bepUsdt.balanceOf(accounts[1].address)).to.equal(0xfc00);
-    expect(await reserve.avblMarketReserves(symbolUsdt)).to.equal(0x400);
-
-    // USDC
-    await expect(
-      deposit
-        .connect(accounts[1])
-        .addToDeposit(symbolUsdc, comit_NONE, depositAmount, {
-          gasLimit: 5000000,
-        })
-    ).emit(library, "NewDeposit");
-    expect(await bepUsdc.balanceOf(accounts[1].address)).to.equal(0xfe00);
-    expect(await reserve.avblMarketReserves(symbolUsdc)).to.equal(0x200);
-
-    await expect(
-      deposit
-        .connect(accounts[1])
-        .addToDeposit(symbolUsdc, comit_NONE, depositAmount, {
-          gasLimit: 5000000,
-        })
-    ).emit(library, "DepositAdded");
-    expect(await bepUsdc.balanceOf(accounts[1].address)).to.equal(0xfc00);
-    expect(await reserve.avblMarketReserves(symbolUsdc)).to.equal(0x400);
-
-    // BTC
-    await expect(
-      deposit
-        .connect(accounts[1])
-        .addToDeposit(symbolBtc, comit_NONE, depositAmount, {
-          gasLimit: 5000000,
-        })
-    ).emit(library, "NewDeposit");
-    expect(await bepBtc.balanceOf(accounts[1].address)).to.equal(0xfe00);
-    expect(await reserve.avblMarketReserves(symbolBtc)).to.equal(0x200);
-=======
         await expect(deposit.connect(accounts[1]).addToDeposit(symbolUsdt, comit_NONE, depositAmount, {gasLimit: 5000000}))
             .emit(deposit, "NewDeposit")
         expect(await bepUsdt.balanceOf(accounts[1].address)).to.equal(0xfe00)
@@ -252,7 +165,6 @@ describe("===== Deposit Test =====", function () {
             .emit(deposit, "DepositAdded")
         expect(await bepBtc.balanceOf(accounts[1].address)).to.equal(0xfc00)
         expect(await reserve.avblMarketReserves(symbolBtc)).to.equal(0x400)
->>>>>>> dinh-diamond2
 
     await expect(
       deposit
@@ -283,14 +195,9 @@ describe("===== Deposit Test =====", function () {
         })
     ).to.emit(library, "NewLoan");
 
-<<<<<<< HEAD
-    expect(await bepUsdt.balanceOf(accounts[1].address)).to.equal(0xfc00);
-    expect(await reserve.avblMarketReserves(symbolUsdt)).to.equal(0x200);
-=======
     it("Check loan", async () => {
         await expect(loanExt.connect(accounts[1]).loanRequest(symbolUsdt, comit_ONEMONTH, 0x200, symbolUsdt, 0x100, {gasLimit: 5000000}))
 			.to.emit(loanExt, "NewLoan");
->>>>>>> dinh-diamond2
 
     await expect(
       loan1
@@ -300,14 +207,8 @@ describe("===== Deposit Test =====", function () {
         })
     ).to.emit(library, "NewLoan");
 
-<<<<<<< HEAD
-    expect(await bepBtc.balanceOf(accounts[1].address)).to.equal(0xfb00);
-    expect(await reserve.avblMarketReserves(symbolBtc)).to.equal(0x300);
-  });
-=======
         await expect(loanExt.connect(accounts[1]).loanRequest(symbolBtc, comit_ONEMONTH, 0x200, symbolBtc, 0x100, {gasLimit: 5000000}))
         .to.emit(loanExt, "NewLoan");
->>>>>>> dinh-diamond2
 
   it("Check addCollateral", async () => {
     await expect(
@@ -321,16 +222,6 @@ describe("===== Deposit Test =====", function () {
     expect(await reserve.avblMarketReserves(symbolUsdt)).to.equal(0x300);
   });
 
-<<<<<<< HEAD
-  it("Check repayLoan", async () => {
-    console.log(await reserve.avblMarketReserves(symbolUsdt));
-    await loan
-      .connect(accounts[1])
-      .repayLoan(symbolUsdt, comit_ONEMONTH, 0x100, { gasLimit: 5000000 });
-    console.log(await reserve.avblMarketReserves(symbolUsdt));
-  });
-});
-=======
     it("Check addCollateral", async () => {
         await expect(loanExt.connect(accounts[1]).addCollateral(symbolUsdt, comit_ONEMONTH, symbolUsdt, 0x100, {gasLimit: 5000000}))
             .to.emit(loanExt, "AddCollateral")
@@ -352,4 +243,3 @@ describe("===== Deposit Test =====", function () {
     })
   
 })
->>>>>>> dinh-diamond2
