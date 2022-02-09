@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.1; 
+
+
 interface BEP20 {
     function transfer(address to, uint256 value) external returns (bool);
     function balanceOf(address account) external view returns (uint256);
@@ -30,14 +32,14 @@ contract Faucet {
     event TokensIssued(BEP20 indexed token, address indexed account, uint indexed amount, uint  time);
 
     constructor(address tUSDT, address tUSDC, address tBTC, address tBNB) {
-        _updateTokens(tUSDT, 10000000000000000000000); // 10000 USDT
-        _updateTokens(tUSDC, 10000000000000000000000); // 10000 USDC
-        _updateTokens(tBTC, 500000000); // 5 BTC
-        _updateTokens(tBNB, 100000000000000000000);   // 100 BNB
+        // _updateTokens(tUSDT, 10000000000000000000000); // 10000 USDT
+        // _updateTokens(tUSDC, 10000000000000000000000); // 10000 USDC
+        // _updateTokens(tBTC, 500000000); // 5 BTC
+        // _updateTokens(tBNB, 100000000000000000000);   // 100 BNB
     }
 
     /// UPDATE TOKENS
-    function _updateTokens(address _token,uint _amount) private {
+    function _updateTokens(address _token,uint _amount) public nonReentrant() {
         require(_token != address(0), "ERROR: Zero address");
 
         TokenLedger storage td = tokens[num];
@@ -58,6 +60,7 @@ contract Faucet {
         require(airdropRecords[_account][td.token] <= block.timestamp, "ERROR: Active timelock");
 
         td.token.transfer(msg.sender, td.amount);
+
         td.balance -= td.amount;
 
         airdropRecords[_account][td.token] = block.timestamp + waitTime;
